@@ -1,0 +1,119 @@
+/* Hospital Appointment Booking System - Stylesheet */
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    background-color: #eef2f5;
+}
+
+/* ---------- Header ---------- */
+.header {
+    background-color: #0b6e99;
+    color: #ffffff;
+    text-align: center;
+    padding: 25px;
+}
+
+.header h1 {
+    margin: 0;
+    font-size: 34px;
+}
+
+/* ---------- Form Container ---------- */
+.container {
+    width: 500px;
+    margin: 30px auto;
+}
+
+.form-box {
+    background-color: #ffffff;
+    padding: 25px 30px;
+    border: 1px solid #cccccc;
+    border-radius: 6px;
+    box-shadow: 2px 2px 8px #cccccc;
+}
+
+.form-box h2 {
+    text-align: center;
+    color: #0b6e99;
+    margin-top: 0;
+    border-bottom: 2px solid #eeeeee;
+    padding-bottom: 12px;
+}
+
+/* ---------- Form Elements ---------- */
+label {
+    display: block;
+    margin-top: 12px;
+    margin-bottom: 4px;
+    font-size: 14px;
+    color: #333333;
+}
+
+input[type="text"],
+input[type="date"],
+input[type="time"],
+select,
+textarea {
+    width: 100%;
+    padding: 9px;
+    font-size: 14px;
+    font-family: Arial, Helvetica, sans-serif;
+    border: 1px solid #bbbbbb;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+    border: 1px solid #0b6e99;
+    outline: none;
+}
+
+textarea {
+    resize: vertical;
+}
+
+/* Error message text shown by JavaScript */
+.error {
+    display: block;
+    color: #cc0000;
+    font-size: 12px;
+    height: 16px;
+}
+
+/* ---------- Buttons ---------- */
+.submit-btn {
+    width: 68%;
+    padding: 11px;
+    margin-top: 15px;
+    background-color: #0b6e99;
+    color: #ffffff;
+    font-size: 15px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.submit-btn:hover {
+    background-color: #08536f;
+}
+
+.reset-btn {
+    width: 28%;
+    padding: 11px;
+    margin-top: 15px;
+    margin-left: 2%;
+    background-color: #888888;
+    color: #ffffff;
+    font-size: 15px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.reset-btn:hover {
+    background-color: #666666;
+}

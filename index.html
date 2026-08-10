@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hospital Appointment Booking System</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Header -->
+    <div class="header">
+        <h1>Hospital Appointment Booking System</h1>
+    </div>
+
+    <!-- Booking form -->
+    <div class="container">
+        <div class="form-box">
+            <h2>Book Your Appointment</h2>
+
+            <form name="bookingForm" action="BookingServlet" method="post" onsubmit="return validateForm()">
+
+                <label for="name">Patient Name :</label>
+                <input type="text" id="name" name="name" placeholder="Enter your full name">
+                <span class="error" id="nameError"></span>
+
+                <label for="email">Email ID :</label>
+                <input type="text" id="email" name="email" placeholder="Enter your email">
+                <span class="error" id="emailError"></span>
+
+                <label for="phone">Mobile Number :</label>
+                <input type="text" id="phone" name="phone" placeholder="10 digit mobile number">
+                <span class="error" id="phoneError"></span>
+
+                <label for="age">Age :</label>
+                <input type="text" id="age" name="age" placeholder="Enter your age">
+                <span class="error" id="ageError"></span>
+
+                <label for="gender">Gender :</label>
+                <select id="gender" name="gender">
+                    <option value="">-- Select Gender --</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                    <option value="Other">Other</option>
+                </select>
+                <span class="error" id="genderError"></span>
+
+                <label for="department">Department :</label>
+                <select id="department" name="department" onchange="loadDoctors()">
+                    <option value="">-- Select Department --</option>
+                    <option value="General Medicine">General Medicine</option>
+                    <option value="Cardiology">Cardiology</option>
+                    <option value="Orthopedics">Orthopedics</option>
+                    <option value="Pediatrics">Pediatrics</option>
+                    <option value="Dermatology">Dermatology</option>
+                </select>
+                <span class="error" id="departmentError"></span>
+
+                <label for="doctor">Doctor :</label>
+                <select id="doctor" name="doctor">
+                    <option value="">-- Select Doctor --</option>
+                </select>
+                <span class="error" id="doctorError"></span>
+
+                <label for="date">Appointment Date :</label>
+                <input type="date" id="date" name="date">
+                <span class="error" id="dateError"></span>
+
+                <label for="time">Appointment Time :</label>
+                <input type="time" id="time" name="time">
+                <span class="error" id="timeError"></span>
+
+                <label for="reason">Reason for Visit :</label>
+                <textarea id="reason" name="reason" rows="4" placeholder="Write your problem here (optional)"></textarea>
+                <span class="error" id="reasonError"></span>
+
+                <input type="submit" value="Book Appointment" class="submit-btn">
+                <input type="reset" value="Reset" class="reset-btn">
+
+            </form>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+
+</body>
+</html>
