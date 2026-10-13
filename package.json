@@ -1,0 +1,31 @@
+{
+  "name": "hospital-booking-system",
+  "version": "1.0.0",
+  "description": "Full-Stack Hospital Appointment Booking System with Supabase, Conflict Detection, and Dashboards",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ROOBIKA-D/Hospital-booking-system.git"
+  },
+  "keywords": [
+    "hospital",
+    "appointment-booking",
+    "express",
+    "supabase",
+    "nodejs"
+  ],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.117.3",
+    "cors": "^2.8.6",
+    "dotenv": "^18.0.7",
+    "express": "^5.3.0",
+    "pg": "^8.23.1"
+  }
+}

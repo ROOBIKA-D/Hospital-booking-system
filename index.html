@@ -5,12 +5,70 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hospital Appointment Booking System</title>
     <link rel="stylesheet" href="style.css">
+    <style>
+        .slot-container {
+            margin-top: 8px;
+            margin-bottom: 12px;
+            padding: 10px;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            display: none;
+        }
+        .slot-pills-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 6px;
+        }
+        .slot-btn {
+            padding: 6px 12px;
+            border-radius: 16px;
+            border: 1px solid #cbd5e1;
+            font-size: 12px;
+            font-weight: 500;
+            background: #ffffff;
+            color: #0f172a;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+        .slot-btn:hover:not(.disabled) {
+            border-color: #0b6e99;
+            background-color: #e0f2fe;
+        }
+        .slot-btn.active {
+            background-color: #0b6e99;
+            color: #ffffff;
+            border-color: #0b6e99;
+        }
+        .slot-btn.disabled {
+            background-color: #f1f5f9;
+            color: #94a3b8;
+            border-color: #e2e8f0;
+            cursor: not-allowed;
+            text-decoration: line-through;
+        }
+        .doc-badge-info {
+            display: inline-block;
+            font-size: 12px;
+            color: #0b6e99;
+            font-weight: 500;
+            margin-top: 4px;
+        }
+    </style>
 </head>
 <body>
 
-    <!-- Header -->
+    <!-- Header & Navigation -->
     <div class="header">
-        <h1>Hospital Appointment Booking System</h1>
+        <div class="header-content">
+            <h1>Hospital Appointment Booking System</h1>
+            <div class="nav-links">
+                <a href="index.html" class="nav-item active">Book Appointment</a>
+                <a href="lookup.html" class="nav-item">My Appointments</a>
+                <a href="appointments.html" class="nav-item">Admin Dashboard</a>
+            </div>
+        </div>
     </div>
 
     <!-- Booking form -->
@@ -57,25 +115,35 @@
                 <span class="error" id="departmentError"></span>
 
                 <label for="doctor">Doctor :</label>
-                <select id="doctor" name="doctor">
+                <select id="doctor" name="doctor" onchange="checkSlotsAvailability()">
                     <option value="">-- Select Doctor --</option>
                 </select>
+                <div id="doctorDetailsBadge" class="doc-badge-info"></div>
                 <span class="error" id="doctorError"></span>
 
                 <label for="date">Appointment Date :</label>
-                <input type="date" id="date" name="date">
+                <input type="date" id="date" name="date" onchange="checkSlotsAvailability()">
                 <span class="error" id="dateError"></span>
 
                 <label for="time">Appointment Time :</label>
-                <input type="time" id="time" name="time">
+                <input type="time" id="time" name="time" placeholder="HH:MM">
+                
+                <!-- Dynamic Slot Picker Panel -->
+                <div id="slotPickerBox" class="slot-container">
+                    <span style="font-size:12px; font-weight:600; color:#475569;">Available Consultation Slots:</span>
+                    <div id="slotButtonsList" class="slot-pills-list"></div>
+                </div>
+
                 <span class="error" id="timeError"></span>
 
                 <label for="reason">Reason for Visit :</label>
-                <textarea id="reason" name="reason" rows="4" placeholder="Write your problem here (optional)"></textarea>
+                <textarea id="reason" name="reason" rows="3" placeholder="Briefly describe your symptoms or reason (optional)"></textarea>
                 <span class="error" id="reasonError"></span>
 
-                <input type="submit" value="Book Appointment" class="submit-btn">
-                <input type="reset" value="Reset" class="reset-btn">
+                <div class="btn-row">
+                    <input type="submit" value="Book Appointment" class="submit-btn">
+                    <input type="reset" value="Reset" class="reset-btn" onclick="resetSlots()">
+                </div>
 
             </form>
         </div>

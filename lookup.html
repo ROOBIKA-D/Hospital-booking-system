@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Appointments - Patient Portal</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .search-box {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 24px 30px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            border: 1px solid #e2e8f0;
+            margin-bottom: 25px;
+        }
+        .search-row {
+            display: flex;
+            gap: 12px;
+            margin-top: 10px;
+        }
+        .btn-search {
+            padding: 10px 24px;
+            background: #0b6e99;
+            color: #ffffff;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .appointment-card {
+            background: #ffffff;
+            border-radius: 10px;
+            border: 1px solid #e2e8f0;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        .apt-title {
+            font-size: 17px;
+            font-weight: 700;
+            color: #0b6e99;
+            margin-bottom: 4px;
+        }
+        .apt-meta {
+            font-size: 13.5px;
+            color: #475569;
+            line-height: 1.5;
+        }
+        .reschedule-panel {
+            display: none;
+            background: #f8fafc;
+            border-top: 1px solid #e2e8f0;
+            padding: 15px 20px;
+            border-radius: 0 0 10px 10px;
+            margin-top: 10px;
+            width: 100%;
+        }
+        .slot-pill {
+            display: inline-block;
+            padding: 6px 12px;
+            margin: 4px;
+            border-radius: 16px;
+            border: 1px solid #cbd5e1;
+            font-size: 12.5px;
+            cursor: pointer;
+            background: #ffffff;
+        }
+        .slot-pill.active {
+            background: #0b6e99;
+            color: #ffffff;
+            border-color: #0b6e99;
+        }
+        .slot-pill.disabled {
+            background: #f1f5f9;
+            color: #94a3b8;
+            cursor: not-allowed;
+            border-color: #e2e8f0;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header & Navigation -->
+    <div class="header">
+        <div class="header-content">
+            <h1>Hospital Appointment Booking System</h1>
+            <div class="nav-links">
+                <a href="index.html" class="nav-item">Book Appointment</a>
+                <a href="lookup.html" class="nav-item active">My Appointments</a>
+                <a href="appointments.html" class="nav-item">Admin Dashboard</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="container" style="max-width: 800px;">
+        <div class="search-box">
+            <h2 style="margin-top:0; color:#0b6e99; font-size:20px;">Find Your Appointment</h2>
+            <p style="color:#64748b; font-size:14px; margin-bottom:12px;">
+                Enter your registered mobile number or Appointment ID to track, reschedule, or cancel.
+            </p>
+            <div class="search-row">
+                <input type="text" id="searchInput" placeholder="Enter 10-digit mobile number or Appointment ID..." style="flex:1;">
+                <button onclick="searchAppointments()" class="btn-search">Search</button>
+            </div>
+        </div>
+
+        <div id="resultsContainer"></div>
+    </div>
+
+    <script>
+        async function searchAppointments() {
+            const query = document.getElementById('searchInput').value.trim();
+            const container = document.getElementById('resultsContainer');
+
+            if (!query) {
+                alert('Please enter a mobile number or Appointment ID');
+                return;
+            }
+
+            container.innerHTML = '<p style="text-align:center; color:#64748b;">Searching appointments...</p>';
+
+            try {
+                const res = await fetch('/api/appointments/lookup?query=' + encodeURIComponent(query));
+                const data = await res.json();
+
+                if (!data.success || !data.appointments || data.appointments.length === 0) {
+                    container.innerHTML = '<div class="stat-card" style="text-align:center; padding:30px;"><p style="color:#64748b; font-size:15px; margin:0;">No appointments found for this search. Please verify your mobile number.</p></div>';
+                    return;
+                }
+
+                container.innerHTML = data.appointments.map(apt => `
+                    <div class="appointment-card" id="card-${apt.id}">
+                        <div>
+                            <div class="apt-title">${apt.patient_name} &bull; ${apt.doctor}</div>
+                            <div class="apt-meta">
+                                <strong>Department:</strong> ${apt.department}<br>
+                                <strong>Date & Time:</strong> ${apt.appointment_date} at ${apt.appointment_time.slice(0, 5)}<br>
+                                <strong>Mobile:</strong> ${apt.phone} &bull; <strong>Status:</strong> 
+                                <span class="badge ${apt.status === 'Confirmed' ? 'badge-confirmed' : (apt.status === 'Completed' ? 'badge-completed' : 'badge-cancelled')}">${apt.status}</span>
+                            </div>
+                        </div>
+                        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                            <a href="/api/appointments/${apt.id}/slip" target="_blank" class="btn-action btn-action-view" style="text-decoration:none; padding:8px 12px;">Print Pass</a>
+                            ${apt.status === 'Confirmed' ? `
+                                <button onclick="toggleReschedule('${apt.id}', '${apt.doctor}')" class="btn-action" style="background:#0284c7; color:#fff; padding:8px 12px;">Reschedule</button>
+                                <button onclick="cancelAppointment('${apt.id}')" class="btn-action btn-action-cancel" style="padding:8px 12px;">Cancel</button>
+                            ` : ''}
+                        </div>
+
+                        <div id="reschedule-${apt.id}" class="reschedule-panel">
+                            <h4 style="margin:0 0 10px; color:#0b6e99;">Select New Date & Time</h4>
+                            <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-bottom:12px;">
+                                <input type="date" id="date-${apt.id}" min="${new Date().toISOString().split('T')[0]}" style="max-width:200px;" onchange="loadSlotsFor('${apt.id}', '${apt.doctor}')">
+                            </div>
+                            <div id="slots-${apt.id}" style="margin-bottom:12px;">
+                                <p style="font-size:13px; color:#64748b; margin:0;">Pick a date first to view available time slots.</p>
+                            </div>
+                            <button onclick="submitReschedule('${apt.id}')" class="btn-action" style="background:#16a34a; color:#fff; padding:8px 16px;">Confirm Reschedule</button>
+                            <button onclick="toggleReschedule('${apt.id}')" class="btn-action" style="background:#64748b; color:#fff; padding:8px 14px;">Close</button>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (err) {
+                container.innerHTML = '<p style="color:#dc2626; text-align:center;">Failed to connect to server: ' + err.message + '</p>';
+            }
+        }
+
+        let selectedRescheduleSlots = {};
+
+        function toggleReschedule(id, doctor) {
+            const panel = document.getElementById('reschedule-' + id);
+            panel.style.display = panel.style.display === 'block' ? 'none' : 'block';
+        }
+
+        async function loadSlotsFor(id, doctor) {
+            const dateInput = document.getElementById('date-' + id);
+            const slotsDiv = document.getElementById('slots-' + id);
+            const selectedDate = dateInput.value;
+
+            if (!selectedDate) return;
+
+            slotsDiv.innerHTML = '<span style="font-size:12px; color:#64748b;">Checking doctor schedule...</span>';
+
+            try {
+                const res = await fetch(`/api/available-slots?doctor=${encodeURIComponent(doctor)}&date=${selectedDate}`);
+                const data = await res.json();
+
+                if (!data.success) {
+                    slotsDiv.innerHTML = '<span style="color:#dc2626; font-size:12px;">Failed to load slots.</span>';
+                    return;
+                }
+
+                slotsDiv.innerHTML = '<div style="margin-top:6px;">' + data.slots.map(s => `
+                    <span class="slot-pill ${s.isAvailable ? '' : 'disabled'}" onclick="${s.isAvailable ? `selectRescheduleSlot('${id}', '${s.time}', this)` : ''}">${s.display}</span>
+                `).join('') + '</div>';
+            } catch (err) {
+                slotsDiv.innerHTML = '<span style="color:#dc2626; font-size:12px;">Slot check error: ' + err.message + '</span>';
+            }
+        }
+
+        function selectRescheduleSlot(id, time, el) {
+            selectedRescheduleSlots[id] = time;
+            const container = document.getElementById('slots-' + id);
+            container.querySelectorAll('.slot-pill').forEach(p => p.classList.remove('active'));
+            el.classList.add('active');
+        }
+
+        async function submitReschedule(id) {
+            const date = document.getElementById('date-' + id).value;
+            const time = selectedRescheduleSlots[id];
+
+            if (!date || !time) {
+                alert('Please pick both a date and an available time slot.');
+                return;
+            }
+
+            try {
+                const res = await fetch(`/api/appointments/${id}/reschedule`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ date, time })
+                });
+                const data = await res.json();
+
+                if (data.success) {
+                    alert('Appointment successfully rescheduled to ' + date + ' at ' + time + '!');
+                    searchAppointments();
+                } else {
+                    alert(data.message || 'Could not reschedule appointment.');
+                }
+            } catch (err) {
+                alert('Server error: ' + err.message);
+            }
+        }
+
+        async function cancelAppointment(id) {
+            if (!confirm('Are you sure you want to cancel this appointment? This cannot be undone.')) return;
+
+            try {
+                const res = await fetch(`/api/appointments/${id}/cancel`, {
+                    method: 'PATCH'
+                });
+                const data = await res.json();
+
+                if (data.success) {
+                    alert('Appointment cancelled successfully.');
+                    searchAppointments();
+                } else {
+                    alert(data.message || 'Error cancelling appointment.');
+                }
+            } catch (err) {
+                alert('Server error: ' + err.message);
+            }
+        }
+    </script>
+</body>
+</html>
